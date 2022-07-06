@@ -1,36 +1,44 @@
-import logo from './logo.svg';
+import React, {Profiler, useState} from "react";
 import './App.css';
-import {Profiler, useState} from "react";
 import {Button, handleProfilerRender} from "./Components";
+import ErrorBoundary from "./ErrorBoundary";
 
 function App() {
-  const [value, setValue] = useState(0);
+    const [btnText, setBtnText] = useState("Click here");
+    const [title, setTitle] = useState('Empty title');
+    const [message, setMessage] = useState("No message");
 
-  return (<div className="App">
-    <header className="App-header">
-      <img src={logo} className="App-logo" alt="logo"/>
-      <p>
-        Edit <code>src/App.js</code> and save to reload.
-      </p>
+    const tryCatch = (text) => {
+        try {
+            text();
+        } catch (error) {
+            console.log("error: ", error);
+        } finally {
+            setMessage(text);
+        }
+    }
 
-      <Profiler id="Frontpage" onRender={handleProfilerRender}>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+    return (<div className="App">
+        <React.StrictMode>
+            <header className="App-header">
+                <p>{message}</p>
 
-        <Button onClickFunction={() => {
-          setValue(value + 1)
-        }}>
-          Click here
-        </Button>
-      </Profiler>
-    </header>
-  </div>);
+                <Profiler id="Frontpage" onRender={handleProfilerRender}>
+                    <ErrorBoundary>
+                        <Button
+                            onClickFunction={() => {
+                                tryCatch("An error occurred");
+                                setBtnText("Well done")
+                            }}
+                            title={title}
+                        >
+                            {btnText}
+                        </Button>
+                    </ErrorBoundary>
+                </Profiler>
+            </header>
+        </React.StrictMode>
+    </div>);
 }
 
 export default App;
